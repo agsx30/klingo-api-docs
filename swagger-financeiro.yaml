@@ -1,0 +1,384 @@
+swagger: "2.0"
+info:
+    description: ""
+    version: "1.0.0"
+    title: "Klingo: Integração Financeiro"
+host: "api-externa.klingo.app"
+basePath: "/api"
+tags:
+    - name: "cadastros"
+      description: "Cadastros básicos para integração"
+    - name: "fornecedor"
+      description: "Criação e Consulta de Fornecedores"
+    - name: "lançamento"
+      description: "Criação de lançamento a pagar no financeiro"
+schemes:
+    - "https"
+paths:
+    /unidades:
+        get:
+            tags:
+                - "cadastros"
+            summary: "Obter lista de unidades e centros de custo"
+            security:
+              - app_token: []
+            description: "Obter lista de unidades e centros de custo"
+            operationId: "unidades"
+            produces:
+                - "application/json"
+            responses:
+                "200":
+                    description: "successful operation"
+                    schema:
+                        type: "array"
+                        items: 
+                          $ref: "#/definitions/unidade"
+                "400":
+                    description: "Falha na consulta"
+    /categorias:
+        get:
+            tags:
+                - "cadastros"
+            summary: "Obter lista de categorias"
+            security:
+              - app_token: []
+            description: "Obter lista de categorias"
+            operationId: "categorias"
+            produces:
+                - "application/json"
+            responses:
+                "200":
+                    description: "successful operation"
+                    schema:
+                        type: "array"
+                        items: 
+                          $ref: "#/definitions/categoria"
+                "400":
+                    description: "Falha na consulta"
+    /formas:
+        get:
+            tags:
+                - "cadastros"
+            summary: "Obter lista de formas de pagamento"
+            security:
+              - app_token: []
+            description: "Obter lista de formas de pagamento"
+            operationId: "formas"
+            produces:
+                - "application/json"
+            responses:
+                "200":
+                    description: "successful operation"
+                    schema:
+                        type: "array"
+                        items: 
+                          $ref: "#/definitions/forma"
+                "400":
+                    description: "Falha na consulta"
+    /impostos:
+        get:
+            tags:
+                - "cadastros"
+            summary: "Obter lista de impostos para lançamento de retenção"
+            security:
+              - app_token: []
+            description: "Obter lista de impostos"
+            operationId: "impostos"
+            produces:
+                - "application/json"
+            responses:
+                "200":
+                    description: "successful operation"
+                    schema:
+                        type: "array"
+                        items: 
+                          $ref: "#/definitions/imposto"
+                "400":
+                    description: "Falha na consulta"
+    /fornecedor:
+        post:
+            tags:
+                - "fornecedor"
+            summary: "Salvar fornecedor"
+            security:
+              - app_token: []
+            description: "Salvar fornecedor"
+            operationId: "salvarFornecedor"
+            parameters:
+              - in: "body"
+                name: "body"
+                description: "Dados do Fornecedor."
+                required: true
+                schema:
+                  $ref: "#/definitions/novo_fornecedor"
+            produces:
+              - "application/json"
+            responses:
+                "200":
+                    description: "successful operation"
+                    schema:
+                        $ref: "#/definitions/fornecedor"
+                "400":
+                    description: "Falha na consulta"
+        get:
+            tags:
+                - "fornecedor"
+            summary: "Obter fornecedor"
+            security:
+              - app_token: []
+            description: "Obter fornecedor"
+            operationId: "fornecedor"
+            parameters:
+                - name: "cpf_cnpj"
+                  in: "query"
+                  description: "CPF/CNPJ do Fornecedor (Apenas números)"
+                  required: true
+                  type: "string"
+            produces:
+                - "application/json"
+            responses:
+                "200":
+                    description: "successful operation"
+                    schema:
+                        $ref: "#/definitions/fornecedor"
+                "400":
+                    description: "Falha na consulta"
+        
+    /lancamento:
+        post:
+            tags:
+                - "lançamento"
+            summary: "Criar lançamento no Contas a Pagar"
+            security:
+              - app_token: []
+            description: "Criar lançamento"
+            operationId: "criarLancamento"
+            parameters:
+              - in: "body"
+                name: "body"
+                description: "Dados do Lançamento."
+                required: true
+                schema:
+                  $ref: "#/definitions/novo_lancamento"
+            produces:
+              - "application/json"
+            responses:
+                "200":
+                    description: "Lançamento criado"
+                "400":
+                    description: "Falha na criação"
+        get:
+            tags:
+                - "lançamento"
+            summary: "Consultar lançamento do Contas a Pagar"
+            security:
+              - app_token: []
+            description: "Consultar lançamento"
+            operationId: "Lancamento"
+            parameters:
+              - in: "body"
+                name: "body"
+                description: "Identificação do Lançamento."
+                required: true
+                schema:
+                  $ref: "#/definitions/identificar_lancamento"
+            produces:
+              - "application/json"
+            responses:
+                "200":
+                    description: "successful operation"
+                    schema:
+                      type: "array"
+                      items: 
+                        $ref: "#/definitions/lancamento"
+                "400":
+                    description: "Falha na consulta"
+        delete:
+            tags:
+                - "lançamento"
+            summary: "Cancelar lançamento no Contas a Pagar"
+            security:
+              - app_token: []
+            description: "Cancelar lançamento"
+            operationId: "cancelarLancamento"
+            parameters:
+              - in: "body"
+                name: "body"
+                description: "Identificação do Lançamento."
+                required: true
+                schema:
+                  $ref: "#/definitions/identificar_lancamento"
+            produces:
+              - "application/json"
+            responses:
+                "200":
+                    description: "successful operation"
+                "400":
+                    description: "Falha na consulta"
+        
+securityDefinitions:
+  app_token:
+    type: "apiKey"
+    name: "X-APP-TOKEN"
+    in: "header"
+definitions:
+    centro: 
+        type: "object"
+        properties: 
+          id:
+            type: "number"
+            example: 1
+          descricao: 
+            type: "string"
+            example: "Consultórios"
+    unidade:
+        type: "object"
+        properties:
+          id: 
+            type: "number"
+            example: 1
+          descricao: 
+            type: "string"
+            example: "Matriz"
+          cnpj: 
+            type: "string"
+            example: "12345678000110"
+          centros: 
+            type: "array"
+            items:
+              $ref: '#/definitions/centro'
+    categoria: 
+        type: "object"
+        properties: 
+          id:
+            type: "number"
+            example: 1
+          descricao: 
+            type: "string"
+            example: "Despesa Administrativa"
+          descricao_completa:
+            type: "string"
+            example: "Despesas Operacionais: Despesa Administrativa"
+    forma: 
+        type: "object"
+        properties: 
+          id:
+            type: "number"
+            example: 1
+          descricao: 
+            type: "string"
+            example: "Dinheiro"
+    imposto: 
+        type: "object"
+        properties: 
+          id:
+            type: "number"
+            example: 1
+          descricao: 
+            type: "string"
+            example: "PIS"
+    fornecedor: 
+        type: "object"
+        properties: 
+          id:
+            type: "number"
+            example: 1
+          razao_social: 
+            type: "string"
+            example: "Organizações Tabajara S/A"
+          nome_fantasia:
+            type: "string"
+            example: "Organizações Tabajara"
+          cpf_cnpj: 
+            type: "string"
+            example: "12345678000110"
+          id_origem: 
+            type: "string"
+            example: "1234"
+    novo_fornecedor: 
+        type: "object"
+        properties: 
+          razao_social: 
+            type: "string"
+            example: "Organizações Tabajara S/A"
+          nome_fantasia:
+            type: "string"
+            example: "Organizações Tabajara"
+          cpf_cnpj: 
+            type: "string"
+            example: "12345678000110"
+          id_origem: 
+            type: "string"
+            example: "1234"
+    identificar_lancamento:
+        type: "object"
+        properties: 
+          id_origem:
+            type: "string"
+            example: "1234"
+    novo_lancamento: 
+        type: "object"
+        properties: 
+          id_origem:
+            type: "string"
+            example: "1234"
+            description: "Id do lançamento no sistema de origem"
+          id_unidade: 
+            type: "number"
+            example: 1
+          cnpj_unidade:
+            type: "string"
+            example: "12345678000110"
+            description: "Deve ser enviado caso não seja enviado o id da unidade"
+          cpf_cnpj_forencedor: 
+            type: "string"
+            example: "12345678000110"
+          id_centro_custo: 
+            type: "number"
+            example: 1
+            description: "Caso não esteja configurado como obrigatório no Klingo, esse campo é opcional."
+          id_categoria: 
+            type: "number"
+            example: 1
+          id_forma_pagamento: 
+            type: "number"
+            example: 1
+            description: "Opcional"
+          descricao: 
+            type: "string"
+            example: "descrição..."
+            description: "Descrição opcional do lançamento."
+          documento: 
+            type: "string"
+            example: "1234"
+          obs: 
+            type: "string"
+            example: "observação..."
+          emissao:
+            type: "string"
+            example: "2022-01-01"
+          parcelas:
+            type: "number"
+            example: 1
+          vencimento:
+            type: "string"
+            example: "2022-01-01"
+          competencia:
+            type: "string"
+            example: "2022-01"
+          valor:
+            type: "number"
+            example: 150.75
+    lancamento:
+        type: "object"
+        properties: 
+          id: 
+            type: "number"
+            example: 1
+          id_origem:
+            type: "string"
+            example: "1234"
+    
+externalDocs:
+    description: "Find out more about Swagger"
+    url: "http://swagger.io"
